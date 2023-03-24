@@ -1,0 +1,129 @@
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <style>
+        #nav a {
+            position: absolute;
+            left: -105px;
+            transition: 0.3s;
+            padding: 10px;
+            width: 130px;
+            text-decoration: none;
+            font-size: 15.5px;
+            color: white;
+            border-radius: 0 5px 5px 0;
+            text-align: right;
+
+        }
+
+        #nav a:hover {
+            left: 0;
+        }
+
+        #home {
+            top: 100px;
+            background-color: #4CAF50;
+        }
+
+        #adddoctors {
+            top: 150px;
+            background-color: #2196F3;
+        }
+
+        #viewdoctors {
+            top: 200px;
+            background-color: #f44336;
+        }
+
+        #viewpatients {
+            top:250px;
+            background-color: #555
+        }
+
+        #operationdetails {
+            top: 300px;
+            background-color: red;
+        }
+
+        #addbloodstock {
+            top: 370px;
+            background-color: green;
+        }
+        #viewbloodbank {
+            top: 420px;
+            background-color: #555
+        }
+
+        #operationfee {
+            top: 480px;
+            background-color: red;
+        }
+        #login{
+            top: 560px;
+            background-color: tomato;
+        }
+        #logout {
+            top: 620px;
+            background-color: tomato;
+        }
+
+        .footer {
+            position: fixed;
+
+            left: 0;
+            bottom: 0;
+            width: 100%;
+            background-color: orangered;
+            color: white;
+            text-align: center;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div style="background-color:orangered; height:13%; text-align: center; margin-top: -20px;">
+        <h1 style="color:white; font-weight: bold; position: relative; top: 50%; transform: translateY(-50%)">Hospital
+            Management System
+        </h1>
+    </div>
+    <div id="nav" class="nav">
+        <a href="http://localhost:2000/adminpage" id="home">Home&nbsp;<span class="glyphicon glyphicon-home"></span></a>
+        <a href="http://localhost:2000/admin/addDoctors" id="adddoctors" target="iframe">Add doctors&nbsp;<span
+                class="fa fa-user-md"></span></a>
+        <a href="http://localhost:2000/admin/viewDoctors" id="viewdoctors" target="iframe">ViewDoctors&nbsp;<span class="fa fa-user-md"></span></a>
+        <a href="http://localhost:2000/admin/viewPatients" id="viewpatients" target="iframe">ViewPatients&nbsp;<span class="fa fa-wheelchair"></span></a>
+        <a href="http://localhost:2000/admin/operationDetails" id="operationdetails" class="" target="iframe">OperationDetails&nbsp;<span class="fa fa-money"></span>
+        </a>
+        <a href="http://localhost:2000/admin/viewBloodBankDetails" id="viewbloodbank" target="iframe">BloodBank&nbsp;<span
+            class="glyphicon glyphicon-eye-open"></span>
+        </a>
+        <a href="http://localhost:2000/admin/viewOperationDetails" id="operationfee" target="iframe">OperationFee
+            &nbsp;<span class="glyphicon glyphicon-eye-open"></span></a>
+       
+        <a href="http://localhost:2000/admin/addBloodStock" id="addbloodstock" target="iframe">BloodStock&nbsp;<span class="glyphicon glyphicon-heart"></span></a>
+        <a href="http://localhost:2000/admin/ChangePassword" id="login" target="iframe">Password&nbsp;<span class="glyphicon glyphicon-log-in"></span></a>
+
+        <a href="http://localhost:2000/" id="logout">Logout&nbsp;<span class="glyphicon glyphicon-log-out"></span></a>
+    </div>
+<center>
+        <iframe src="" name="iframe" id="iframe"
+        style="width:98%; min-height:500px; border: none; margin-left: 5px;"></iframe>
+
+</center>
+   
+    <div class="footer">
+        <h3> &Copy 2019 To Hospital Management System</h3>
+    </div>
+
+</body>
+
+</html>

@@ -1,0 +1,211 @@
+<html>
+<title>patient registration</title>
+
+<head>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+</head>
+<style>
+    .form-control {
+        border: 1px solid black;
+        border-radius: 10px;
+    }
+</style>
+<script>
+    function performAjax(httpMethod, url, params) {
+        const myPromise = new Promise((resolve, reject) => {
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200) {
+                    resolve(this.responseText);
+                }
+                if (this.status == 500) {
+                    reject({ error: true, message: "ServerError" });
+                }
+                if (this.status == 404) {
+                    reject({ error: true, message: "Resource not found" });
+                }
+            };
+            xhttp.open(httpMethod, url, true);
+            xhttp.setRequestHeader("Content-Type", "application/json");
+            params ? xhttp.send(params) : xhttp.send();
+        });
+        return myPromise;
+    }
+
+    function LoadDoctorDeatils() {
+        const getdata1 = performAjax("GET", "http://localhost:1122/patient/view");
+        getdata1
+            .then((response) => {
+                GetDoctors(response);
+
+            })
+            .catch(err => {
+                alert(err.message);
+            })
+    }
+
+
+    function GetDoctors(Data) {
+        const username = document.getElementById("doctorname");
+        const data = JSON.parse(Data);
+        for (let i = 0; i < data.length; i++) {
+            let option = document.createElement("OPTION");
+            option.innerHTML = data[i].username;
+            option.value = data[i].username;
+            username.options.add(option);
+        }
+    }
+
+    
+
+    function GetFee() {
+        const doctorname = document.getElementById('doctorname').value;
+        const getdata1 = performAjax("GET", `http://localhost:1122/patient/viewname?username=${doctorname}`);
+        getdata1
+            .then((response) => {
+                const data = JSON.parse(response).map(rec => {
+                    document.getElementById('fee').value=rec.consultationfee;
+                })
+               
+            })
+            .catch(err => {
+                alert(err.message);
+            })
+    }
+
+
+    function RegisterHere() {
+        event.preventDefault();
+        const patientname = document.getElementById("name").value;
+        const password = document.getElementById("password").value;
+        const mobileno = document.getElementById("mobileno").value;
+        const emailid = document.getElementById("emailid").value;
+        const problem = document.getElementById("problem").value;
+        const address = document.getElementById("address").value;
+        const appointmentdate = document.getElementById("date").value;
+        const doctorname = document.getElementById("doctorname").value;
+
+        const addstdPromise = performAjax(
+            "POST",
+            "http://localhost:1122/patient/registration",
+            JSON.stringify({ patientname, password, mobileno,emailid, problem, address, appointmentdate, doctorname })
+
+        );
+        addstdPromise
+            .then((response) => {
+
+                confirm(" Successfully PatientsRegistered");
+                document.getElementById("name").value = "";
+                document.getElementById("password").value = "";
+                document.getElementById("mobileno").value = "";
+                document.getElementById("emailid").value = "";
+                document.getElementById("problem").value = "";
+                document.getElementById("address").value = "";
+                document.getElementById("date").value = "";
+                document.getElementById("doctorname").value = "";
+
+            })
+            .catch(err => {
+                alert(err.message);
+            })
+    }
+
+</script>
+
+<body><br><br>
+    <center>
+        <div
+            style="background-color: white;position:relative;  width: 400px;height: 350px;  border: 0px outset  black;">
+            <div class="row">
+                <h4 style="font-family:dancingscript; text-align:center;color:palevioletred"><u>PATIENT REGISTRATION</u>
+                </h4>
+            </div><br>
+            <script>
+                LoadDoctorDeatils();
+            </script>
+            <form onsubmit="RegisterHere()">
+            <div class="row" style="display:none;">
+                <div class="col-md-2"></div>
+                <div class="col-md-8"><label>Patient Id:</label>
+                    <input type="hidden" class="form-control" id="id" required></div>
+                <div class="col-md-2"></div>
+            </div>
+            <div class="row">
+                <div class="col-md-2"></div>
+                <div class="col-md-8"><label>Name:</label>
+                    <input type="text" name="name" class="form-control" id="name" placeholder="Enter Your Name" required></div>
+                <div class="col-md-2"></div>
+            </div><br>
+            <div class="row">
+                <div class="col-md-2"></div>
+                <div class="col-md-8"><label>Password:</label>
+                    <input type="password" name="password" class="form-control" id="password"
+                        placeholder="Enter Password" required></div>
+                <div class="col-md-2"></div>
+            </div><br>
+            <div class="row">
+                <div class="col-md-2"></div>
+                <div class="col-md-8"><label>Mobile no:</label>
+                    <input type="text" name="mobileno" class="form-control" id="mobileno" placeholder="Enter MobileNo" maxlength="10" pattern="[6-9]{1}[0-9]{9}" required>
+                </div>
+                <div class="col-md-2"></div>
+            </div><br>
+            <div class="row">
+                <div class="col-md-2"></div>
+                <div class="col-md-8"><label>EmailId:</label>
+                    <input type="email" name="email" class="form-control" id="emailid" placeholder="Enter EmailId"   pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$" required>
+                </div>
+                <div class="col-md-2"></div>
+            </div><br>
+            <div class="row">
+                <div class="col-md-2"></div>
+                <div class="col-md-8"><label>Problem:</label>
+                    <input type="text" name="Problem" class="form-control" id="problem"
+                        placeholder="Enter Your Problem" required></div>
+                <div class="col-md-2"></div>
+            </div><br>
+
+
+            <div class="row">
+                <div class="col-md-2"></div>
+                <div class="col-md-8"><label>Address:</label>
+                    <textarea class="form-control" id="address" placeholder="Enter Your Address" required></textarea></div>
+                <div class="col-md-2"></div>
+            </div><br>
+            <div class="row">
+                <div class="col-md-2"></div>
+                <div class="col-md-8"><label>Appointment Date:</label>
+                    <input type="date" name="date" class="form-control" id="date" required></div>
+                <div class="col-md-2"></div>
+            </div><br>
+            <div class="row">
+                <div class="col-md-2"></div>
+                <div class="col-md-8"><label>Doctor Name:</label>
+                    <select class="form-control" id="doctorname" onchange="GetFee()" required>
+                            <option value="Select">Select</option>
+                    </select></div>
+                <div class="col-md-2"></div>
+            </div><br>
+            
+            <div class="row">
+                    <div class="col-md-2"></div>
+                    <div class="col-md-8"><label>ConsultationFee</label>
+                        <input type="text" name="fee" class="form-control" id="fee" placeholder="ConsultationFee" disabled>
+                    </div>
+                    <div class="col-md-2"></div>
+                </div><br>
+            <div class="row">
+                <div class="col-md-4"></div>
+                <div class="col-md-3"><button type="submit" class="btn btn-success"><b>Register</b></button></div>
+                <div class="col-md-5"></div>
+            </div><br><br></form>
+        </div>
+    </center>
+</body>
+
+</html>

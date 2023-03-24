@@ -1,0 +1,264 @@
+<html>
+<title>add doctors</title>
+
+<head>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+</head>
+
+<style>
+    .tablecss {
+        font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+        border-collapse: collapse;
+        width: 98%;
+    }
+
+    .tablecss td,
+    .tablecss th {
+        border: 1px solid #ddd;
+        padding: 8px;
+    }
+
+    .tablecss tr:nth-child(odd) {
+        background-color: #f2f2f2;
+    }
+
+    .tablecss tr:hover {
+        background-color: #ddd;
+    }
+
+    .tablecss th {
+        padding-top: 12px;
+        padding-bottom: 12px;
+        text-align: center;
+        background-color: lavender;
+        color: black;
+        font-weight: bold;
+    }
+</style>
+<script>
+    let doctor = [];
+    function performAjax(httpMethod, url, params) {
+        const myPromise = new Promise((resolve, reject) => {
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200) {
+                    resolve(this.responseText);
+                }
+                if (this.status == 500) {
+                    reject({ error: true, message: "ServerError" });
+                }
+                if (this.status == 404) {
+                    reject({ error: true, message: "Resource not found" });
+                }
+            };
+            xhttp.open(httpMethod, url, true);
+            xhttp.setRequestHeader("Content-Type", "application/json");
+            params ? xhttp.send(params) : xhttp.send();
+        });
+        return myPromise;
+    }
+
+
+    function LoadDoctorsData() {
+        const getdoctorsdata = performAjax("GET", "http://localhost:1122/admin/viewdoctors");
+        getdoctorsdata
+            .then((response) => {
+                LaodDoctors(response);
+
+            })
+            .catch(err => {
+                alert(err.message);
+            })
+    }
+
+    function LaodDoctors(records) {
+        doctor = JSON.parse(records);
+        let tableHeader = `<tr><th>Sno</th><th>FirstName</th><th>LastName</th><th>UserName</th><th>MobileNo</th><th>EmailId</th><th>Specialization</th><th>ConsultationFee</th><th>Address</th><th>Actions</th><tr>`;
+        if (doctor.length > 0) {
+            let tableRow = doctor.map((details, index) => {
+                const deleteButton = `<a id="${details._id}"
+                         onclick="deleteName(event)" style="color:red"  class="glyphicon glyphicon-trash" ></a>`;
+                const editButton = `<a id="${details._id}" onclick="editName(event)" style="color:green"  class="glyphicon glyphicon-pencil"></a>`;
+                return `<tr><td>${index + 1}</td><td>${details.firstname}</td> <td>${details.lastname}</td> <td>${details.username}</td><td>${details.mobileno}</td>  
+                            <td>${details.emailid}</td> <td>${details.specialization}</td> <td>${details.consultationfee}</td> <td>${details.address}</td><td>${editButton}&nbsp;&nbsp;&nbsp;&nbsp;${deleteButton}</td></tr>`;
+            });
+            document.getElementById("viewdoctors").innerHTML = `<table class="tablecss"  border="2">${tableHeader}${tableRow.join('')}</table>`;
+        }
+        else {
+            tableRow = `<tr><td colspan="12" align="center">No Data Found</td></tr>`;
+            document.getElementById("viewdoctors").innerHTML = `${tableHeader}${tableRow}`;
+        }
+    }
+    function deleteName(event) {
+        event.preventDefault();
+        let result = confirm("Are you sure you want to delete?");
+        if (result) {
+            const deletePromise = performAjax('DELETE', `http://localhost:1122/admin/doctorremove/${event.target.id}`);
+            deletePromise
+                .then((doctor) => {
+                    LaodDoctors(doctor);
+                })
+                .catch(err => {
+                    alert(err.message);
+                })
+        }
+        LoadDoctorsData()
+
+    }
+    function editName(event) {
+        event.preventDefault();
+        let rec;
+        doctor.map(doc => {
+            if (doc._id === event.target.id) {
+                rec = doc;
+            }
+        });
+        if (rec !== undefined) {
+            $("#mymodal").modal();
+            document.getElementById("id").value = event.target.id;
+            document.getElementById("firstname").value = rec.firstname;
+            document.getElementById("lastname").value = rec.lastname;
+            document.getElementById("username").value = rec.username;
+            document.getElementById("mobileno").value = rec.mobileno;
+            document.getElementById("email").value = rec.emailid;
+            document.getElementById("specialization").value = rec.specialization;
+            document.getElementById("fee").value = rec.consultationfee;
+            document.getElementById("address").value = rec.address;
+        }
+        else {
+            alert("Doctors not found");
+        }
+
+    }
+    function DoctorUpdate() {
+        const id = document.getElementById("id").value;
+        const firstname = document.getElementById("firstname").value;
+        const lastname = document.getElementById("lastname").value;
+        const username = document.getElementById("username").value;
+        const mobileno = document.getElementById("mobileno").value;
+        const emailid = document.getElementById("email").value;
+        const specialization = document.getElementById("specialization").value;
+        const consultationfee = document.getElementById("fee").value;
+        const address = document.getElementById("address").value;
+        const getRegPromise = performAjax(
+            "PUT",
+            `http://localhost:1122/admin/doctorupdate/${id}`,
+            JSON.stringify({ firstname, lastname, username, mobileno, emailid, specialization, consultationfee, address })
+        );
+        getRegPromise
+            .then((regPromise) => {
+                alert('Update Successfully Completed');
+                LoadDoctorsData();
+                $("#mymodal").modal("hide");
+            })
+            .catch(err => {
+                alert(err.message);
+            })
+
+
+    }
+
+
+
+</script>
+
+<body onload="LoadDoctorsData()">
+    <br><br>
+    <center>
+        <table id="viewdoctors" border="2" class="tablecss"></table>
+    </center>
+    <div class="modal fade" id="mymodal" role="dialog">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content" style="background-color:lavender;border-radius: 10px">
+                <div class="modal-header" style="background-color:white;border-radius :10px">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h3 style="color:black;text-align:center">DoctorRegister</h3>
+                </div>
+                <div class="modal-body">
+                    <form onsubmit="DoctorUpdate()">
+                        <div class="row">
+                            <div class="col-md-2"><input type="hidden" name="id" class="form-control" id="id"></div>
+                            <div class="col-md-8"><label>FirstName:</label>
+                                <input type="text" name="firstname" class="form-control" id="firstname"
+                                    placeholder="First Name" required></div>
+                            <div class="col-md-2"></div>
+                        </div><br>
+                        <div class="row">
+                            <div class="col-md-2"></div>
+                            <div class="col-md-8"><label>LastName:</label>
+                                <input type="text" name="lastname" class="form-control" id="lastname"
+                                    placeholder="Last Name" required></div>
+                            <div class="col-md-2"></div>
+                        </div><br>
+                        <div class="row">
+                            <div class="col-md-2"></div>
+                            <div class="col-md-8"><label>User name:</label>
+                                <input type="text" name="uname" class="form-control" id="username"
+                                    placeholder="Enter UserName" required></div>
+                            <div class="col-md-2"></div>
+                        </div><br>
+                        <div class="row">
+                            <div class="col-md-2"></div>
+                            <div class="col-md-8"><label>Mobile no:</label>
+                                <input type="text" name="mobileno" class="form-control" id="mobileno"
+                                    placeholder="Enter Your MobileNo" maxlength="10" pattern="[6-9]{1}[0-9]{9}"
+                                    required></div>
+                            <div class="col-md-2"></div>
+                        </div><br>
+                        <div class="row">
+                            <div class="col-md-2"></div>
+                            <div class="col-md-8"><label>Email id:</label>
+                                <input type="email" name="email" class="form-control" id="email"
+                                    placeholder="enter email id" pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
+                                    required></div>
+                            <div class="col-md-2"></div>
+                        </div><br>
+                        <div class="row">
+                            <div class="col-md-2"></div>
+                            <div class="col-md-8"><label for="">Specialization:</label>
+                                <select class="form-control" id="specialization" required>
+                                    <option value="">--Select--</option>
+                                    <option value="General ">General </option>
+                                    <option value="Cardiologist ">Cardiologist </option>
+                                    <option value="Gynecologist">Gynecologist</option>
+                                    <option value="Neurologist">Neurologist</option>
+                                    <option value="Neurosurgeon">Neurosurgeon</option>
+                                </select>
+                            </div>
+                            <div class="col-md-2"></div>
+                        </div><br>
+                        <div class="row">
+                            <div class="col-md-2"></div>
+                            <div class="col-md-8"><label for="">ConsultationFee:</label>
+                                <input type="number" name="fee" class="form-control" id="fee"
+                                    placeholder="Enter ConsultationFee" required></div>
+
+
+                            <div class="col-md-2"></div>
+                        </div><br>
+
+                        <div class="row">
+                            <div class="col-md-2"></div>
+                            <div class="col-md-8"><label>Address:</label>
+                                <textarea class="form-control" id="address" required></textarea></div>
+                            <div class="col-md-2"></div>
+                        </div><br>
+                        <div class="row">
+                            <div class="col-md-5"></div>
+                            <div class="col-md-2"><button type="submit" class="btn btn-success">Update</button></div>
+                            <div class="col-md-5"></div>
+                        </div><br><br>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+</html>

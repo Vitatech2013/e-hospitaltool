@@ -1,0 +1,100 @@
+<html>
+<title>add doctors</title>
+<head>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+</head>
+
+<style>
+    .tablecss {
+        font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+        border-collapse: collapse;
+        width: 60%;
+    }
+
+    .tablecss td,
+    .tablecss th {
+        border: 1px solid #ddd;
+        padding: 8px;
+    }
+
+    .tablecss tr:nth-child(odd) {
+        background-color: #f2f2f2;
+    }
+
+    .tablecss tr:hover {
+        background-color: #ddd;
+    }
+
+    .tablecss th {
+        padding-top: 12px;
+        padding-bottom: 12px;
+        text-align: center;
+        background-color: lavender;
+        color: black;
+        font-weight: bold;
+    }
+</style>
+<script>
+ function performAjax(httpMethod, url, params) {
+        const myPromise = new Promise((resolve, reject) => {
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200) {
+                    resolve(this.responseText);
+                }
+                if (this.status == 500) {
+                    reject({ error: true, message: "ServerError" });
+                }
+                if (this.status == 404) {
+                    reject({ error: true, message: "Resource not found" });
+                }
+            };
+            xhttp.open(httpMethod, url, true);
+            xhttp.setRequestHeader("Content-Type", "application/json");
+            params ? xhttp.send(params) : xhttp.send();
+        });
+        return myPromise;
+    }
+   
+
+        function LoadBloodData() {
+            const getdoctorsdata = performAjax("GET", "http://localhost:1122/patient/viewblood");
+            getdoctorsdata
+                .then((response) => {
+                    LaodBloodBank(response);
+
+                })
+                .catch(err => {
+                    alert(err.message);
+                })
+        }
+        
+        function LaodBloodBank(records) {
+            record = JSON.parse(records);
+            let tableHeader = `<tr><th>Sno</th><th>BloodGroup</th><th>BloodPackets</th><tr>`;
+            if(record.length>0){
+            let tableRow = record.map((details, index) => {
+                return `<tr><td>${index + 1}</td><td>${details.bloodgroup}</td> <td>${details.bloodpackets}</td></tr>`;
+            });
+            document.getElementById("viewbloodbank").innerHTML = `<table class="tablecss"  border="2">${tableHeader}${tableRow.join('')}</table>`;
+        }
+        else {
+            tableRow = `<tr><td colspan="12" align="center">No Data Found</td></tr>`;
+            document.getElementById("viewbloodbank").innerHTML = `${tableHeader}${tableRow}`;
+        }
+    }
+
+</script>
+
+<body onload="LoadBloodData()">
+    <br><br>
+    <center>
+            <table id="viewbloodbank" border="2" class="tablecss"></table>
+    </center>
+</body>
+</html>

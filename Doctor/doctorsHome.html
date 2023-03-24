@@ -1,0 +1,110 @@
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <style>
+        #nav a {
+            position: absolute;
+            left: -115px;
+            transition: 0.3s;
+            padding: 10px;
+            width: 140px;
+            text-decoration: none;
+            font-size: 15px;
+            color: white;
+            border-radius: 0 5px 5px 0;
+            text-align: right;
+
+        }
+
+        #nav a:hover {
+            left: 0;
+        }
+
+        #home {
+            top: 100px;
+            background-color: #4CAF50;
+        }
+
+        #addpatient {
+            top: 160px;
+            background-color: #2196F3;
+        }
+
+        #viewbloodbank {
+            top: 275px;
+            background-color: #555
+        }
+
+        #operationfee {
+            top: 350px;
+            background-color: red;
+        }
+
+        #viewpatientdetails {
+            top: 220px;
+            background-color: #f44336;
+        }
+        #login{
+            top: 420px;
+            background-color: tomato;
+        }
+
+        #logout {
+            top: 490px;
+            background-color: tomato;
+        }
+
+        .footer {
+            position: fixed;
+
+            left: 0;
+            bottom: 0;
+            width: 100%;
+            background-color: orangered;
+            color: white;
+            text-align: center;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div style="background-color:orangered; height:13%; text-align: center; margin-top: -20px;">
+        <h1 style="color:white; font-weight: bold; position: relative; top: 50%; transform: translateY(-50%)">Hospital
+            Management System
+        </h1>
+    </div>
+    <div id="nav" class="nav">
+        <a href="http://localhost:2000/doctorshome" id="home">Home&nbsp;<span class="glyphicon glyphicon-home"></span></a>
+        <a href="http://localhost:2000/doctor/viewprofile" id="addpatient" target="iframe">ViewProfile&nbsp;<span
+                class="fa fa-user"></span></a>
+        <a href="http://localhost:2000/doctor/viewPatientsDetails" id="viewpatientdetails" target="iframe">View Patients
+        <span  class="fa fa-wheelchair"></span></a>
+        <a href="http://localhost:2000/doctor/viewBloodDetails" id="viewbloodbank" target="iframe">BloodBank &nbsp; &nbsp;<span class="glyphicon glyphicon-eye-open"></span></a>
+        <a href="http://localhost:2000/doctor/viewoperationFeeDetails" id="operationfee" target="iframe">OperationFee&nbsp; &nbsp;<span
+                class="glyphicon glyphicon-eye-open"></span></a>
+      
+                <a href="http://localhost:2000/doctor/ChangePassword" id="login" target="iframe">Password&nbsp;<span class="glyphicon glyphicon-log-in"></span></a>
+
+                <a href="http://localhost:2000/" id="logout">Logout&nbsp;<span class="glyphicon glyphicon-log-out"></span></a>
+    </div>
+<center>
+        <iframe src="" name="iframe" id="iframe"
+        style="width:98%; min-height:500px; border: none; margin-left: 5px;"></iframe>
+</center>
+    
+    <div class="footer">
+        <h3> &Copy 2019 To Hospital Management System</h3>
+    </div>
+
+</body>
+
+</html>

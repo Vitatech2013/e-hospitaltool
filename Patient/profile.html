@@ -1,0 +1,131 @@
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+<style>
+    .form-control {
+        border: 1px solid black;
+        border-radius: 10px;
+    }
+</style>
+<script>
+    const id = sessionStorage.getItem("userid");
+     const patientname = sessionStorage.getItem("name");
+
+    function performAjax(httpMethod, url, params) {
+        const myPromise = new Promise((resolve, reject) => {
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200) {
+                    resolve(this.responseText);
+                }
+                if (this.status == 500) {
+                    reject({ error: true, message: "ServerError" });
+                }
+                if (this.status == 404) {
+                    reject({ error: true, message: "Resource not found" });
+                }
+            };
+            xhttp.open(httpMethod, url, true);
+            xhttp.setRequestHeader("Content-Type", "application/json");
+            params ? xhttp.send(params) : xhttp.send();
+        });
+        return myPromise;
+    }
+    
+    function PatientData() {
+        const getUsersPromise = performAjax("GET", `http://localhost:1122/patient/viewprofile?patientname=${patientname}`);
+        getUsersPromise
+            .then((data) => {
+                const profile = JSON.parse(data);
+                profile.map(rec => {
+                document.getElementById("id").value =rec._id;
+                document.getElementById("name").value =rec.patientname;
+                document.getElementById("mobileno").value =rec.mobileno;
+                document.getElementById("emailid").value =rec.emailid;
+                document.getElementById("address").value =rec.address;
+                document.getElementById("date").value =rec.appointmentdate;
+                document.getElementById("doctorname").value =rec.doctorname;
+                document.getElementById("problem").value =rec.problem;
+                document.getElementById("medicine").value =rec.medicine;
+               
+                });
+
+            })
+            .catch(err => {
+                alert(err.message);
+            })
+
+    }
+
+
+</script>
+<html>
+<body onload="PatientData()"><br>
+    <center>
+        <div
+            style="background-color: white;position:relative;  width: 400px;height: 350px;  border: 0px outset  black;">
+            <div class="row">
+                <h3 style="font-family:dancingscript; text-align:center;color:palevioletred"><u>PROFILE</u></h3>
+
+            </div>
+            <div class="row">
+                <div class="col-md-2"><input type="hidden" name="id" class="form-control" id="id"></div>
+                <div class="col-md-8"><label>UserName:</label>
+                    <input type="text" name="uname" class="form-control" id="name" placeholder="enter user name"></div>
+                <div class="col-md-2"></div>
+            </div><br>
+            <div class="row">
+                <div class="col-md-2"></div>
+                <div class="col-md-8"><label>Mobile no:</label>
+                    <input type="text" name="mobileno" class="form-control" id="mobileno"></div>
+                <div class="col-md-2"></div>
+            </div><br>
+            <div class="row">
+                <div class="col-md-2"></div>
+                <div class="col-md-8"><label>Emailid:</label>
+                    <input type="email" name="emailid" class="form-control" id="emailid"></div>
+                <div class="col-md-2"></div>
+            </div><br>
+            <div class="row">
+                    <div class="col-md-2"></div>
+                    <div class="col-md-8"><label>Address:</label>
+                        <textarea class="form-control" id="address"></textarea></div>
+                    <div class="col-md-2"></div>
+                </div><br>
+           
+            <div class="row">
+                    <div class="col-md-2"></div>
+                    <div class="col-md-8"><label>AppointmentDate:</label>
+                        <input type="date" name="date" class="form-control" id="date"></div>
+                    <div class="col-md-2"></div>
+                </div><br>
+                <div class="row">
+                        <div class="col-md-2"></div>
+                        <div class="col-md-8"><label>DoctorName:</label>
+                            <input type="text" name="doctorname" class="form-control" id="doctorname"></div>
+                        <div class="col-md-2"></div>
+                    </div><br>
+                    <div class="row">
+                            <div class="col-md-2"></div>
+                            <div class="col-md-8"><label>Problem:</label>
+                                <input type="text" name="Problem" class="form-control" id="problem"
+                                    placeholder="enter your Problem"></div>
+                            <div class="col-md-2"></div>
+                        </div><br>
+                        <div class="row">
+                                <div class="col-md-2"></div>
+                                <div class="col-md-8"><label>Medicine:</label>
+                                    <input type="text" class="form-control" id="medicine"></textarea></div>
+                                <div class="col-md-2"></div>
+                            </div><br>
+           
+            <!-- <div class="row">
+                <div class="col-md-5"></div>
+                <div class="col-md-2"><button type="button" class="btn btn-success" onclick="PatientUpdate()">Update</button></div>
+                <div class="col-md-5"></div>
+            </div><br><br> -->
+        </div>
+    </center>
+</body>
+
+</html>

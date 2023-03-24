@@ -1,0 +1,193 @@
+<html>
+<title>add doctors</title>
+
+<head>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+</head>
+
+<style>
+    .tablecss {
+        font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
+        border-collapse: collapse;
+        width: 97%;
+    }
+
+    .tablecss td,
+    .tablecss th {
+        border: 1px solid #ddd;
+        padding: 8px;
+    }
+
+    .tablecss tr:nth-child(odd) {
+        background-color: #f2f2f2;
+    }
+
+    .tablecss tr:hover {
+        background-color: #ddd;
+    }
+
+    .tablecss th {
+        padding-top: 12px;
+        padding-bottom: 12px;
+        text-align: center;
+        background-color: lavender;
+        color: black;
+        font-weight: bold;
+    }
+</style>
+<script>
+    function performAjax(httpMethod, url, params) {
+        const myPromise = new Promise((resolve, reject) => {
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200) {
+                    resolve(this.responseText);
+                }
+                if (this.status == 500) {
+                    reject({ error: true, message: "ServerError" });
+                }
+                if (this.status == 404) {
+                    reject({ error: true, message: "Resource not found" });
+                }
+            };
+            xhttp.open(httpMethod, url, true);
+            xhttp.setRequestHeader("Content-Type", "application/json");
+            params ? xhttp.send(params) : xhttp.send();
+        });
+        return myPromise;
+    }
+
+
+    function LoadPatientsData() {
+        const getdata = performAjax("GET", "http://localhost:1122/doctor/viewpatients");
+        getdata
+            .then((response) => {
+                LaodPatients(response);
+
+            })
+            .catch(err => {
+                alert(err.message);
+            })
+    }
+    function GetValues(event) {
+        const getUsersPromise = performAjax("GET", `http://localhost:1122/doctor/${event.target.id}`);
+        getUsersPromise
+            .then((response) => {
+                const data = JSON.parse([response]);
+                [data].map(rec => {
+                    document.getElementById("name").value = rec.patientname;
+                    document.getElementById("mobileno").value = rec.mobileno;
+                    document.getElementById("problem").value = rec.problem;
+                    document.getElementById("id").value = event.target.id;
+                    document.getElementById("medicine").value = rec.medicine;
+                });
+            })
+            .catch(err => {
+                alert(err.message);
+            })
+    }
+    function UpdateMedicine(){
+        const id = document.getElementById("id").value;
+        const problem = document.getElementById("problem").value;
+        const medicine = document.getElementById("medicine").value;
+        console.log(id, problem, medicine);
+        const getRegPromise = performAjax(
+            "PUT",
+            `http://localhost:1122/doctor/medicineupdate/${id}`,
+            JSON.stringify( { problem, medicine } )
+        );
+        getRegPromise
+            .then((regPromise) => {
+                alert('Successfully Completed');
+                $('#medicine').modal("hide");
+
+            })
+            .catch(err => {
+                alert(err.message);
+            })
+    }
+
+    function LaodPatients(records) {
+        record = JSON.parse(records);
+        let tableHeader = `<tr><th>Sno</th><th>PatientName</th><th>MobileNo</th><th>Address</th><th>AppointmentDate</th><th>ConsultDoctor</th><th>Problem</th><th>Medicine</th><th>AddMedicine</th><tr>`;
+        if (record.length > 0) {
+            let tableRow = record.map((details, index) => {
+                const addButton = `<a id="${details._id}" onclick="GetValues(event)" style="color:blue"  class="glyphicon glyphicon-plus" font-size:15px;" data-toggle="modal" data-target="#mymodal" data-backdrop="static" data-keyboard="false"></a>`;
+                return `<tr><td>${index + 1}</td><td>${details.patientname}</td><td>${details.mobileno}</td>  
+                            <td>${details.address}</td> <td>${details.appointmentdate}</td> <td>${details.doctorname}</td> <td>${details.problem}</td><td>${details.medicine}</td><td>${addButton}</td></tr>`;
+            });
+            document.getElementById("viewpatients").innerHTML = `<table class="tablecss"  border="2">${tableHeader}${tableRow.join('')}</table>`;
+        }
+        else {
+            tableRow = `<tr><td colspan="12" align="center">No Data Found</td></tr>`;
+            document.getElementById("viewpatients").innerHTML = `${tableHeader}${tableRow}`;
+        }
+    }
+
+
+</script>
+
+<body onload="LoadPatientsData()">
+    <br><br>
+    <center>
+        <table id="viewpatients" border="2" class="tablecss"></table>
+    </center>
+
+    <div class="modal fade" id="mymodal" role="dialog">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content" style="background-color:lavender;border-radius: 10px">
+                <div class="modal-header" style="background-color:white;border-radius :10px">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h3 style="color:black;text-align:center">AddMedicine</h3>
+                </div>
+                <div class="modal-body">
+                    <form onsubmit="UpdateMedicine()">
+                    <div class="row">
+                        <div class="col-md-2"><input type="hidden" name="id" class="form-control" id="id"></div>
+                        <div class="col-md-8"><label>PatientName:</label>
+                            <input type="text" name="name" class="form-control" id="name" placeholder="enter your name" readonly>
+                        </div>
+                        <div class="col-md-2"></div>
+                    </div><br>
+
+                    <div class="row">
+                        <div class="col-md-2"></div>
+                        <div class="col-md-8"><label>Mobile no:</label>
+                            <input type="text" name="mobileno" class="form-control" id="mobileno"
+                            readonly    placeholder="enter your mobile no" maxlength="10" pattern="[6-9]{1}[0-9]{9}" required></div>
+                        <div class="col-md-2"></div>
+                    </div><br>
+                    <div class="row">
+                        <div class="col-md-2"></div>
+                        <div class="col-md-8"><label>Problem:</label>
+                            <input type="text" name="Problem" class="form-control" id="problem"
+                                placeholder="enter your Problem" required></div>
+                        <div class="col-md-2"></div>
+                    </div><br>
+
+                    <div class="row">
+                        <div class="col-md-2"></div>
+                        <div class="col-md-8"><label>Medicine:</label>
+                            <input type="text" name="medicine" class="form-control" id="medicine" required></div>
+                        <div class="col-md-2" ></div>
+                    </div><br>
+                    <div class="row">
+                        <div class="col-md-5"></div>
+                        <div class="col-md-2"><button type="submit" class="btn btn-success" >Add</button></div>
+                        <div class="col-md-5"></div>
+                    </div><br><br></form>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    </div>
+
+</body>
+
+</html>

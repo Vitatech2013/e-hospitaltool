@@ -1,0 +1,99 @@
+<html>
+<title>add doctors</title>
+
+<head>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+</head>
+<style>
+    .form-control {
+        border: 1px solid black;
+        border-radius: 10px;
+    }
+</style>
+<script>
+     function performAjax(httpMethod, url, params) {
+        const myPromise = new Promise((resolve, reject) => {
+            var xhttp = new XMLHttpRequest();
+            xhttp.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200) {
+                    resolve(this.responseText);
+                }
+                if (this.status == 500) {
+                    reject({ error: true, message: "ServerError" });
+                }
+                if (this.status == 404) {
+                    reject({ error: true, message: "Resource not found" });
+                }
+            };
+            xhttp.open(httpMethod, url, true);
+            xhttp.setRequestHeader("Content-Type", "application/json");
+            params ? xhttp.send(params) : xhttp.send();
+        });
+        return myPromise;
+    }
+
+
+    function AddBloodDetails() {
+        event.preventDefault();
+        const bloodgroup = document.getElementById("bloodgroup").value;
+        const bloodpackets = document.getElementById("packets").value;
+        const addstdPromise = performAjax(
+            "POST",
+            "http://localhost:1122/admin/addblood",
+            JSON.stringify({ bloodgroup,bloodpackets })
+
+        );
+        addstdPromise
+            .then((response) => {
+
+                confirm(" Successfully Added");
+                document.getElementById("bloodgroup").value = "";
+                document.getElementById("packets").value = "";
+               
+            })
+            .catch(err => {
+                alert(err.message);
+            })
+    }
+
+
+</script>
+
+<body><br><br>
+    <center>
+        <div
+            style="background-color: white;position:relative;  width: 400px;height: 350px;  border: 0px outset  black;">
+            <div class="row">
+                <h3 style="font-family:dancingscript; text-align:center;color:palevioletred"><u>ADD BLOODSTOCK</u></h3>
+
+            </div><br>
+            <form onsubmit="AddBloodDetails()">
+            <div class="row">
+                <div class="col-md-2"></div>
+                <div class="col-md-8"><label>Blood group:</label>
+                    <input type="text" name="bgroup" class="form-control" id="bloodgroup" required></div>
+                <div class="col-md-2"></div>
+            </div><br>
+
+            <div class="row">
+                <div class="col-md-2"></div>
+                <div class="col-md-8"><label>No.of blood packets:</label>
+                    <input type="text" name="packets" class="form-control" id="packets" required></div>
+                <div class="col-md-2"></div>
+            </div><br>
+
+            <div class="row">
+                <div class="col-md-5"></div>
+                <div class="col-md-2"><button type="submit" class="btn btn-success">Add</button></div>
+                <div class="col-md-5"></div>
+            </div><br></form>
+        </div>
+    </center>
+</body>
+
+</html>
